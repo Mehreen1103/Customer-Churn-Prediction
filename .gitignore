@@ -2,4 +2,5 @@ myenv/
 packages/ 
 __pycache__/ 
 *.pyc 
-echo customer-churn-prediction/ >> .gitignore
+
+customer-churn-prediction/ 
