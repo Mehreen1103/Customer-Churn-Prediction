@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+numpy
+scikit-learn
+xgboost
+pydantic
+python-multipart
+lightgbm

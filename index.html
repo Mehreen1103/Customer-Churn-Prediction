@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Churn Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 1000px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 22px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px 24px;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: #444;
+        }
+        input, select {
+            padding: 7px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 22px;
+            padding: 13px;
+            width: 100%;
+            background: #2f6fed;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover { background: #1e56c4; }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .prob {
+            font-size: 14px;
+            font-weight: normal;
+            color: #555;
+            display: block;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Customer Churn Prediction</h1>
+    <form id="churnForm" autocomplete="off">
+        <div class="grid">
+
+            <!-- Column 1 -->
+            <div class="field">
+                <label>Gender</label>
+                <select id="f1"><option>Male</option><option>Female</option></select>
+            </div>
+            <div class="field">
+                <label>Multiple Lines</label>
+                <select id="f5"><option>Yes</option><option>No</option><option>No phone service</option></select>
+            </div>
+            <div class="field">
+                <label>Streaming TV</label>
+                <select id="f11"><option>Yes</option><option>No</option><option>No internet service</option></select>
+            </div>
+
+            <div class="field">
+                <label>Senior Citizen</label>
+                <select id="senior"><option value="0">No</option><option value="1">Yes</option></select>
+            </div>
+            <div class="field">
+                <label>Internet Service</label>
+                <select id="f6"><option>DSL</option><option>Fiber optic</option><option>No</option></select>
+            </div>
+            <div class="field">
+                <label>Streaming Movies</label>
+                <select id="f12"><option>Yes</option><option>No</option><option>No internet service</option></select>
+            </div>
+
+            <div class="field">
+                <label>Partner</label>
+                <select id="f2"><option>Yes</option><option>No</option></select>
+            </div>
+            <div class="field">
+                <label>Online Security</label>
+                <select id="f7"><option>Yes</option><option>No</option><option>No internet service</option></select>
+            </div>
+            <div class="field">
+                <label>Contract</label>
+                <select id="f13"><option>Month-to-month</option><option>One year</option><option>Two year</option></select>
+            </div>
+
+            <div class="field">
+                <label>Dependents</label>
+                <select id="f3"><option>Yes</option><option>No</option></select>
+            </div>
+            <div class="field">
+                <label>Online Backup</label>
+                <select id="f8"><option>Yes</option><option>No</option><option>No internet service</option></select>
+            </div>
+            <div class="field">
+                <label>Paperless Billing</label>
+                <select id="f14"><option>Yes</option><option>No</option></select>
+            </div>
+
+            <div class="field">
+                <label>Tenure (months)</label>
+                <input type="number" id="f16" min="0" placeholder="e.g. 12">
+            </div>
+            <div class="field">
+                <label>Device Protection</label>
+                <select id="f9"><option>Yes</option><option>No</option><option>No internet service</option></select>
+            </div>
+            <div class="field">
+                <label>Payment Method</label>
+                <select id="f15">
+                    <option>Electronic check</option>
+                    <option>Mailed check</option>
+                    <option>Bank transfer (automatic)</option>
+                    <option>Credit card (automatic)</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Phone Service</label>
+                <select id="f4"><option>Yes</option><option>No</option></select>
+            </div>
+            <div class="field">
+                <label>Tech Support</label>
+                <select id="f10"><option>Yes</option><option>No</option><option>No internet service</option></select>
+            </div>
+            <div class="field">
+                <label>Monthly Charges</label>
+                <input type="number" id="f17" min="0" step="0.01" placeholder="e.g. 75.50">
+            </div>
+
+            <!-- Total Charges spans last spot -->
+            <div class="field" style="grid-column: 3;">
+                <label>Total Charges</label>
+                <input type="number" id="f18" min="0" step="0.01" placeholder="e.g. 2400">
+            </div>
+
+        </div>
+        <button type="submit">Predict</button>
+    </form>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+document.getElementById("churnForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    document.getElementById("result").innerHTML = "Predicting…";
+
+    // Collect the 18 categorical/text features (f1–f18) in the order app.py expects
+    const ids = ["f1","f2","f3","f4","f5","f6","f7","f8","f9","f10",
+                 "f11","f12","f13","f14","f15","f16","f17","f18"];
+    const features = ids.map(id => document.getElementById(id).value);
+
+    // SeniorCitizen is handled separately — inject into position 1 inside app.py
+    // We pass it as a 19th element at the end; app.py reads it via features[18]
+    features.push(document.getElementById("senior").value);
+
+    try {
+        const res  = await fetch("/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ features })
+        });
+        const data = await res.json();
+
+        const label = data.prediction === 1 ? "Churn" : "No Churn";
+        const prob  = data.confidence != null
+            ? (data.confidence * 100).toFixed(2) + "%"
+            : "N/A";
+
+        document.getElementById("result").innerHTML =
+            `Prediction: ${label}<span class="prob">Probability: ${prob}</span>`;
+
+    } catch (err) {
+        document.getElementById("result").innerHTML = "Error connecting to prediction API.";
+    }
+});
+</script>
+</body>
+</html>
