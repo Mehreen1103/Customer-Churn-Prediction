@@ -14,7 +14,7 @@ Customer churn is one of the biggest challenges in the telecom industry. This pr
 - Serves predictions via a REST API with an interactive web UI
 
 ---
-📝**Kaggle Notebook Link:**[Click Here](https://www.kaggle.com/code/mehreenrahman/telco-customer-churn)
+📝**Kaggle Notebook Link:** [Click Here] (https://www.kaggle.com/code/mehreenrahman/telco-customer-churn)
 ## 🎯 Model Performance
 
 | Metric | Score |
